@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>SimpleGauge.qml</file>
+        <file>images/gauge/skinblackA/background.svg</file>
+        <file>images/gauge/skinblackA/needle.svg</file>
+        <file>images/gauge/skinblackA/overlay.svg</file>
+        <file>images/gauge/skinblackB/background.svg</file>
+        <file>images/gauge/skinblackB/needle.svg</file>
+        <file>images/gauge/skinblackB/overlay.svg</file>
+    </qresource>
+</RCC>
