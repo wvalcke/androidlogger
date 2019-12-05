@@ -13,6 +13,7 @@ class DataPool : public QObject
 Q_OBJECT
     Q_PROPERTY(QString logFile READ logFile WRITE setlogFile NOTIFY logFileChanged)
     Q_PROPERTY(int sampleLength READ sampleLength WRITE setsampleLength NOTIFY sampleLengthChanged)
+    Q_PROPERTY(int sampleRatio READ sampleRatio WRITE setsampleRatio NOTIFY sampleRatioChanged)
 public:
     DataPool();
     Q_INVOKABLE void setSensorValues(double paX, double paY, double paZ);
@@ -26,6 +27,8 @@ private:
     void setlogFile(QString paData);
     int sampleLength();
     void setsampleLength(int paLength);
+    int sampleRatio();
+    void setsampleRatio(int paRatio);
 
     double meX;
     double meY;
@@ -38,6 +41,9 @@ private:
     QFile meLogFile;
     int meSampleLength;
 
+    int meSampleRatio;
+
+
     QString meLogFilename;
 
     KeepAwakeHelper* meKeepAwakeHelper;
@@ -47,6 +53,7 @@ private slots:
 signals:
     void logFileChanged();
     void sampleLengthChanged();
+    void sampleRatioChanged();
 };
 
 #endif // DATAPOOL_H

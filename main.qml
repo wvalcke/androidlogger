@@ -1,7 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Layouts 1.3
-import QtQuick.Controls 2.5
+import QtQuick.Controls 2.12
 import QtSensors 5.9
 import QtPositioning 5.12
 import com.bep.qmlcomponents 1.0
@@ -80,36 +80,87 @@ Window {
             anchors.topMargin: 10
             spacing: 5
 
-            Text {
-                Layout.alignment: Qt.AlignHCenter
-                text: "Logger application"
-                font.pixelSize: 20
-                font.bold: true
-            }
-            RowLayout {
+            Item {
                 Layout.fillWidth: true
-                Layout.fillHeight: false
-
-                Button {
-                    text : "Start logging"
-                    onClicked: DataPool.startLogging()
-                    Layout.fillWidth: true
-                }
-                Button {
-                    text : "Stop logging"
-                    onClicked: DataPool.stopLogging()
-                    Layout.fillWidth: true
+                height: subject.height
+                Text {
+                    id: subject
+                    text: "Logger application"
+                    font.pixelSize: 20
+                    font.bold: true
+                    anchors.centerIn: parent
                 }
                 Text {
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                    text: "Loggin to file : "+ DataPool.logFile
-                    wrapMode: Text.WrapAnywhere
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    text : DataPool.sampleLength
+                    font.pixelSize: 20
+                    font.bold: true
+                }
+                Text {
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "Rate "+slider.value+"/s"
+                    font.pixelSize: 20
+                    font.bold: true
                 }
             }
-            Text {
+
+            GridLayout {
                 Layout.fillWidth: true
-                text: "Log counter : " + DataPool.sampleLength
+                Layout.fillHeight: false
+                columns: 3
+
+                Button {
+                    Layout.row: 0
+                    Layout.column: 0
+                    Layout.fillWidth: false
+                    text : "Start"
+                    onClicked: {
+                        slider.enabled = false
+                        DataPool.startLogging()
+                    }
+                }
+                Button {
+                    Layout.row: 0
+                    Layout.column: 1
+                    Layout.fillWidth: false
+                    text : "Stop"
+                    onClicked: {
+                        slider.enabled = true
+                        DataPool.stopLogging()
+                    }
+                }
+
+                Slider {
+                    id: slider
+                    Layout.row: 1
+                    Layout.column: 0
+                    Layout.rowSpan: 1
+                    Layout.columnSpan: 2
+                    from: 1
+                    to: 15
+                    stepSize: 1
+                    value: 1
+                    onValueChanged: DataPool.sampleRatio = value;
+                }
+
+                Item {
+                    Layout.row: 0
+                    Layout.column: 2
+                    Layout.columnSpan: 1
+                    Layout.rowSpan: 2
+                    Layout.preferredWidth: 2
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    Text {
+                        anchors.fill: parent
+                        text: "Logfile : "+ DataPool.logFile
+                        font.pixelSize: 14
+                        wrapMode: Text.WrapAnywhere
+                    }
+                }
+
             }
 
             Item {
@@ -356,11 +407,11 @@ Window {
                                 Layout.fillWidth: true
                                 ColumnLayout {
                                     anchors.fill: parent
-                                    Text {
+                                    /*Text {
                                         Layout.alignment: Qt.AlignHCenter
                                         text: "Speed"
                                         font.bold: true
-                                    }
+                                    }*/
 
                                     SimpleGauge {
                                         Layout.fillHeight: true
@@ -406,50 +457,6 @@ Window {
                         }
                     }
                 }
-
-            /*    ColumnLayout {
-                    anchors.fill: parent
-                    spacing: 0
-
-
-
-                    Item {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Layout.preferredHeight: 30
-                        Rectangle {
-                            anchors.fill: parent
-                            z: -1
-                            color: "purple"
-                        }
-
-                        ColumnLayout {
-                            anchors.fill: parent
-                            Text {
-                                Layout.fillWidth: true
-                                text: "GPS data"
-                                font.pixelSize: 30
-                                font.bold: true
-                            }
-
-                            Text {
-                                text: "Longitude : "+ root.longitude
-                                font.pixelSize: 20
-                                Layout.fillWidth: true
-                            }
-                            Text {
-                                text: "Latitude : "+ root.latitude
-                                font.pixelSize: 20
-                                Layout.fillWidth: true
-                            }
-                            Text {
-                                text: "Speed (km/h) : "+ root.speed
-                                font.pixelSize: 20
-                                Layout.fillWidth: true
-                            }
-                        }
-                    }
-                }*/
             }
         }
     }

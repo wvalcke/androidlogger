@@ -25,6 +25,8 @@ DataPool::DataPool()
 
     meKeepAwakeHelper = nullptr;
 
+    meSampleRatio = 1;
+
     setlogFile("No logging active");
 
     connect(&meLogTimer, &QTimer::timeout, this, &DataPool::logTimerFired);
@@ -72,7 +74,7 @@ void DataPool::startLogging()
     qDebug() << "Opening file " << loFI.absoluteFilePath();
     if (meLogFile.open(QIODevice::WriteOnly))
     {
-        meLogTimer.start(1000);
+        meLogTimer.start(1000/meSampleRatio);
         meSampleLength = 0;
         setsampleLength(meSampleLength);
         setlogFile(loFI.absoluteFilePath());
@@ -98,7 +100,7 @@ void DataPool::stopLogging()
 
 void DataPool::logTimerFired()
 {
-    qDebug() << "Log timer fired";
+    //qDebug() << "Log timer fired";
     meLogFile.write(QString("%1, %2, %3, %4, %5\n").arg(meX, 0, 'f', 2).arg(meY, 0, 'f', 2).arg(meZ, 0, 'f', 2)
                     .arg(meLongitude, 0, 'f', 6).arg(meLatitude, 0, 'f', 6)
                     .toLatin1());
@@ -127,5 +129,20 @@ void DataPool::setsampleLength(int paLength)
     {
         meSampleLength = paLength;
         emit sampleLengthChanged();
+    }
+}
+
+int DataPool::sampleRatio()
+{
+    return meSampleRatio;
+}
+
+void DataPool::setsampleRatio(int paRatio)
+{
+    if (meSampleRatio != paRatio)
+    {
+        meSampleRatio = paRatio;
+        //qDebug() << "Sample ratio is " << meSampleRatio;
+        emit sampleRatioChanged();
     }
 }
