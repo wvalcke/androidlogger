@@ -9,6 +9,9 @@
 #include "components/bargraph.h"
 #include "components/verticalBargraph.h"
 #include "components/Arrow.h"
+#include "components/GaugeScale.h"
+#include "components/GaugeTicks.h"
+#include "components/GaugeZones.h"
 
 DataPool::DataPool()
 {
@@ -34,9 +37,9 @@ void DataPool::registerMetaData()
     qmlRegisterType<clAquaLabel>("com.bep.qmlcomponents", 1, 0, "AquaLabel");*/
     qmlRegisterType<BarGraph>("com.bep.qmlcomponents", 1, 0, "BarGraph");
     qmlRegisterType<VerticalBarGraph>("com.bep.qmlcomponents", 1, 0, "VerticalBarGraph");
-//    qmlRegisterType<clGaugeScale>("com.bep.qmlcomponents", 1, 0, "GaugeScale");
-//    qmlRegisterType<clGaugeTicks>("com.bep.qmlcomponents", 1, 0, "GaugeTicks");
-//    qmlRegisterType<clGaugeZones>("com.bep.qmlcomponents", 1, 0, "GaugeZones");
+    qmlRegisterType<clGaugeScale>("com.bep.qmlcomponents", 1, 0, "GaugeScale");
+    qmlRegisterType<clGaugeTicks>("com.bep.qmlcomponents", 1, 0, "GaugeTicks");
+    qmlRegisterType<clGaugeZones>("com.bep.qmlcomponents", 1, 0, "GaugeZones");
 //    qmlRegisterType<clGlossyLabel>("com.bep.qmlcomponents", 1, 0, "GlossyLabel");
 //    qmlRegisterType<clGraph>("com.bep.qmlcomponents", 1, 0, "Graph");
     qmlRegisterType<clMeter>("com.bep.qmlcomponents", 1, 0, "Meter");

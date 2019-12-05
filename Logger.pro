@@ -17,6 +17,9 @@ SOURCES += \
         DataPool.cpp \
         LockHelper.cpp \
         components/Arrow.cpp \
+        components/GaugeScale.cpp \
+        components/GaugeTicks.cpp \
+        components/GaugeZones.cpp \
         components/Meter.cpp \
         components/WallClock.cpp \
         components/bargraph.cpp \
@@ -40,6 +43,9 @@ HEADERS += \
     DataPool.h \
     LockHelper.h \
     components/Arrow.h \
+    components/GaugeScale.h \
+    components/GaugeTicks.h \
+    components/GaugeZones.h \
     components/Meter.h \
     components/WallClock.h \
     components/bargraph.h \

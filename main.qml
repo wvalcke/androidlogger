@@ -21,6 +21,7 @@ Window {
         property double accelY: 0
         property double accelZ: 0
         property string speed: "Unknown"
+        property double speedValue: 0.0
         anchors.fill: parent
 
         Component.onCompleted: {
@@ -61,11 +62,13 @@ Window {
                 }
                 if (position.speedValid)
                 {
-                    root.speed = (position.speed*3.6).toFixed(1)
+                    root.speedValue = (position.speed*3.6).toFixed(1)
+                    root.speed = root.speedValue
                 }
                 else
                 {
                     root.speed = "Unknown"
+                    root.speedValue = 0.0
                 }
             }
         }
@@ -75,157 +78,379 @@ Window {
             anchors.leftMargin: 10
             anchors.rightMargin: 10
             anchors.topMargin: 10
+            spacing: 5
 
             Text {
-                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignHCenter
                 text: "Logger application"
-                horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: 30
+                font.pixelSize: 20
                 font.bold: true
             }
-
-            Button {
-                text : "Start logging"
-                onClicked: DataPool.startLogging()
+            RowLayout {
                 Layout.fillWidth: true
-            }
+                Layout.fillHeight: false
 
-            Text {
-                Layout.fillWidth: true
-                text: "Loggin to file : "+ DataPool.logFile
-                wrapMode: Text.WrapAnywhere
+                Button {
+                    text : "Start logging"
+                    onClicked: DataPool.startLogging()
+                    Layout.fillWidth: true
+                }
+                Button {
+                    text : "Stop logging"
+                    onClicked: DataPool.stopLogging()
+                    Layout.fillWidth: true
+                }
+                Text {
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    text: "Loggin to file : "+ DataPool.logFile
+                    wrapMode: Text.WrapAnywhere
+                }
             }
             Text {
                 Layout.fillWidth: true
                 text: "Log counter : " + DataPool.sampleLength
             }
 
-            Button {
-                text : "Stop logging"
-                onClicked: DataPool.stopLogging()
-                Layout.fillWidth: true
-            }
-
             Item {
-                height: 10
+                Layout.fillHeight: true
                 Layout.fillWidth: true
-            }
 
-            Text {
-                Layout.fillWidth: true
-                text: "Sensor data"
-                horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: 30
-                font.bold: true
-            }
+                ColumnLayout {
+                    anchors.fill: parent
 
-            RowLayout {
-                Layout.preferredHeight: root.height*0.3
-                SimpleGauge {
-                    Layout.fillWidth: true
-                    height: width
+                    Item {
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 30
+
+                        ColumnLayout {
+                            anchors.fill: parent
+                            Text {
+                                text: "Acceleration sensor data"
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+
+                            RowLayout {
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+
+                                ColumnLayout {
+                                    Layout.fillHeight: true
+                                    Layout.fillWidth: true
+                                    Layout.preferredWidth: 1
+                                    SimpleGauge {
+                                        Layout.fillWidth: true
+                                        Layout.preferredHeight: height
+                                        height: width
+                                        minValue: -15
+                                        maxValue: 15
+                                        value: root.accelX
+                                        GaugeScale {
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            width: parent.width*0.9
+                                            height: parent.height*0.9
+                                            minValue: -15
+                                            maxValue: 15
+                                            minAngle: -135
+                                            maxAngle: 135
+                                            scaleColor: "white"
+                                            scaleFontSize: scaleTextXaccel.font.pixelSize*1.5
+                                            scalePrecision: 1
+                                            tickList: [-15, -10, -5, 0, 5, 10, 15]
+                                        }
+
+                                        Text {
+                                            id: scaleTextXaccel
+                                            anchors.bottom: parent.bottom
+                                            anchors.bottomMargin: parent.height*0.1
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            text: root.accelX.toFixed(2)
+                                            color: "white"
+                                        }
+                                    }
+                                    Text {
+                                        text: "X acceleration"
+                                        Layout.alignment: Qt.AlignHCenter
+                                    }
+                                }
+
+                                ColumnLayout {
+                                    Layout.fillHeight: true
+                                    Layout.fillWidth: true
+                                    Layout.preferredWidth: 1
+                                    SimpleGauge {
+                                        Layout.fillWidth: true
+                                        Layout.preferredHeight: height
+                                        height: width
+                                        minValue: -15
+                                        maxValue: 15
+                                        value: root.accelY
+                                        GaugeScale {
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            width: parent.width*0.9
+                                            height: parent.height*0.9
+                                            minValue: -15
+                                            maxValue: 15
+                                            minAngle: -135
+                                            maxAngle: 135
+                                            scaleColor: "white"
+                                            scaleFontSize: scaleTextXaccel.font.pixelSize*1.5
+                                            scalePrecision: 1
+                                            tickList: [-15, -10, -5, 0, 5, 10, 15]
+                                        }
+
+                                        Text {
+                                            anchors.bottom: parent.bottom
+                                            anchors.bottomMargin: parent.height*0.1
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            text: root.accelY.toFixed(2)
+                                            color: "white"
+                                        }
+                                    }
+                                    Text {
+                                        text: "Y acceleration"
+                                        Layout.alignment: Qt.AlignHCenter
+                                    }
+                                }
+
+                                ColumnLayout {
+                                    Layout.fillHeight: true
+                                    Layout.fillWidth: true
+                                    Layout.preferredWidth: 1
+                                    SimpleGauge {
+                                        Layout.fillWidth: true
+                                        Layout.preferredHeight: height
+                                        height: width
+                                        minValue: -15
+                                        maxValue: 15
+                                        value: root.accelZ
+                                        GaugeScale {
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            width: parent.width*0.9
+                                            height: parent.height*0.9
+                                            minValue: -15
+                                            maxValue: 15
+                                            minAngle: -135
+                                            maxAngle: 135
+                                            scaleColor: "white"
+                                            scaleFontSize: scaleTextXaccel.font.pixelSize*1.5
+                                            scalePrecision: 1
+                                            tickList: [-15, -10, -5, 0, 5, 10, 15]
+                                        }
+
+                                        Text {
+                                            anchors.bottom: parent.bottom
+                                            anchors.bottomMargin: parent.height*0.1
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            text: root.accelZ.toFixed(2)
+                                            color: "white"
+                                        }
+                                    }
+                                    Text {
+                                        text: "Z acceleration"
+                                        Layout.alignment: Qt.AlignHCenter
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                    Item {
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 30
+
+                        ColumnLayout {
+                            anchors.fill: parent
+                            RowLayout {
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                Text {
+                                    text: "X : "
+                                    Layout.alignment: Qt.AlignVCenter
+                                }
+                                BarGraph {
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    value: root.accelX
+                                    target: 0
+                                    greenLowertolerance: 5
+                                    greenUppertolerance: 5
+                                    orangeLowertolerance: 2
+                                    orangeUppertolerance: 2
+                                }
+
+                            }
+                            RowLayout {
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                Text {
+                                    text: "Y : "
+                                    Layout.alignment: Qt.AlignVCenter
+                                }
+                                BarGraph {
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    value: root.accelY
+                                    target: 0
+                                    greenLowertolerance: 5
+                                    greenUppertolerance: 5
+                                    orangeLowertolerance: 2
+                                    orangeUppertolerance: 2
+                                }
+                            }
+                            RowLayout {
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                Text {
+                                    text: "Z : "
+                                    Layout.alignment: Qt.AlignVCenter
+                                }
+                                BarGraph {
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    value: root.accelZ
+                                    target: 0
+                                    greenLowertolerance: 5
+                                    greenUppertolerance: 5
+                                    orangeLowertolerance: 2
+                                    orangeUppertolerance: 2
+                                }
+                            }
+                        }
+                    }
+                    Item {
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 30
+
+                        RowLayout {
+                            anchors.fill: parent
+                            Item {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                ColumnLayout {
+                                    anchors.fill: parent
+                                    Text {
+                                        text: "GPS coordinates"
+                                        font.bold: true
+                                    }
+                                    Text {
+                                        text : "Longitude : " + root.longitude
+                                    }
+                                    Text {
+                                        text: "Latitude : " + root.latitude
+                                    }
+                                }
+                            }
+
+                            Item {
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                ColumnLayout {
+                                    anchors.fill: parent
+                                    Text {
+                                        Layout.alignment: Qt.AlignHCenter
+                                        text: "Speed"
+                                        font.bold: true
+                                    }
+
+                                    SimpleGauge {
+                                        Layout.fillHeight: true
+                                        Layout.preferredWidth: height
+                                        Layout.alignment: Qt.AlignHCenter
+                                        minValue: 0
+                                        maxValue: 220
+                                        value: root.speedValue
+                                        GaugeScale {
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            width: parent.width*0.9
+                                            height: parent.height*0.9
+                                            minValue: 0
+                                            maxValue: 220
+                                            minAngle: -135
+                                            maxAngle: 135
+                                            scaleColor: "white"
+                                            scaleFontSize: speedScale.font.pixelSize*1.5
+                                            scalePrecision: 0
+                                            tickList: [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220]
+                                        }
+
+                                        Text {
+                                            id: speedScale
+                                            anchors.bottom: parent.bottom
+                                            anchors.bottomMargin: parent.height*0.1
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            text: root.speedValue.toFixed(1)
+                                            color: "white"
+                                        }
+                                    }
+
+
+                                    Text {
+                                        text: "Speed (km/h) : " + root.speed
+                                    }
+                                    Item {
+                                        height: 10
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-                SimpleGauge {
-                    Layout.fillWidth: true
-                    height: width
-                }
-                SimpleGauge {
-                    Layout.fillWidth: true
-                    height: width
-                }
+
+            /*    ColumnLayout {
+                    anchors.fill: parent
+                    spacing: 0
+
+
+
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        Layout.preferredHeight: 30
+                        Rectangle {
+                            anchors.fill: parent
+                            z: -1
+                            color: "purple"
+                        }
+
+                        ColumnLayout {
+                            anchors.fill: parent
+                            Text {
+                                Layout.fillWidth: true
+                                text: "GPS data"
+                                font.pixelSize: 30
+                                font.bold: true
+                            }
+
+                            Text {
+                                text: "Longitude : "+ root.longitude
+                                font.pixelSize: 20
+                                Layout.fillWidth: true
+                            }
+                            Text {
+                                text: "Latitude : "+ root.latitude
+                                font.pixelSize: 20
+                                Layout.fillWidth: true
+                            }
+                            Text {
+                                text: "Speed (km/h) : "+ root.speed
+                                font.pixelSize: 20
+                                Layout.fillWidth: true
+                            }
+                        }
+                    }
+                }*/
             }
-
-            RowLayout {
-                Text {
-                    text: "X : "
-                    Layout.alignment: Qt.AlignVCenter
-                }
-
-                BarGraph {
-                    height: 30
-                    Layout.alignment: Qt.AlignVCenter
-                    Layout.preferredWidth: 10
-                    Layout.fillWidth: true
-                    value: root.accelX
-                    target: 0
-                    greenLowertolerance: 5
-                    greenUppertolerance: 5
-                    orangeLowertolerance: 2
-                    orangeUppertolerance: 2
-                }
-            }
-
-            RowLayout {
-                Text {
-                    text: "Y : "
-                    Layout.alignment: Qt.AlignVCenter
-                }
-
-                BarGraph {
-                    height: 30
-                    Layout.alignment: Qt.AlignVCenter
-                    Layout.preferredWidth: 10
-                    Layout.fillWidth: true
-                    value: root.accelY
-                    target: 0
-                    greenLowertolerance: 5
-                    greenUppertolerance: 5
-                    orangeLowertolerance: 2
-                    orangeUppertolerance: 2
-
-                }
-            }
-
-            RowLayout {
-                Text {
-                    text: "Z : "
-                    Layout.alignment: Qt.AlignVCenter
-                }
-
-                BarGraph {
-                    height: 30
-                    Layout.alignment: Qt.AlignVCenter
-                    Layout.preferredWidth: 10
-                    Layout.fillWidth: true
-                    value: root.accelZ
-                    target: 0
-                    greenLowertolerance: 5
-                    greenUppertolerance: 5
-                    orangeLowertolerance: 2
-                    orangeUppertolerance: 2
-
-                }
-            }
-
-            Item {
-                height: 10
-                Layout.fillWidth: true
-            }
-
-            Text {
-                Layout.fillWidth: true
-                text: "GPS data"
-                font.pixelSize: 30
-                font.bold: true
-            }
-
-            Text {
-                text: "Longitude : "+ root.longitude
-                font.pixelSize: 20
-                Layout.fillWidth: true
-            }
-            Text {
-                text: "Latitude : "+ root.latitude
-                font.pixelSize: 20
-                Layout.fillWidth: true
-            }
-            Text {
-                text: "Speed (km/h) : "+ root.speed
-                font.pixelSize: 20
-                Layout.fillWidth: true
-            }
-
         }
-
     }
 }
