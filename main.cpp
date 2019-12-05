@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
     engine.load(url);
 
     QtAndroid::androidActivity().callStaticMethod<void>("org/bep/jni/ScreenLockInterface", "initializeData", "()V");
+    QtAndroid::androidActivity().callMethod<void>("setRequestedOrientation", "(I)V", 1);
 
     return app.exec();
 }
