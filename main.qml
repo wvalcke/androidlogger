@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.12
 import QtSensors 5.9
 import QtPositioning 5.12
+import QtCharts 2.3
 import com.bep.qmlcomponents 1.0
 
 Window {
@@ -12,6 +13,18 @@ Window {
     width: 640
     height: 480
     title: qsTr("Hello World")
+
+    Timer {
+        id: chartTimer
+        running: false
+        repeat: true
+        interval: 100
+        onTriggered: {
+            var result = Math.sqrt(Math.pow(root.accelX, 2)+Math.pow(root.accelY, 2)+Math.pow(root.accelZ, 2))-9.81
+            chart.appendPoint(result)
+        }
+
+    }
 
     Item {
         id: root
@@ -22,6 +35,7 @@ Window {
         property double accelZ: 0
         property string speed: "Unknown"
         property double speedValue: 0.0
+        property double sampleCounter: 0.0
         anchors.fill: parent
 
         Component.onCompleted: {
@@ -118,6 +132,8 @@ Window {
                     text : "Start"
                     onClicked: {
                         slider.enabled = false
+                        chartTimer.start()
+                        chart.resetData()
                         DataPool.startLogging()
                     }
                 }
@@ -128,6 +144,7 @@ Window {
                     text : "Stop"
                     onClicked: {
                         slider.enabled = true
+                        chartTimer.stop()
                         DataPool.stopLogging()
                     }
                 }
@@ -315,7 +332,58 @@ Window {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 30
 
-                        ColumnLayout {
+                        ChartView {
+                            id: chart
+                            anchors.fill: parent
+                            margins.left: 0
+                            margins.right: 0
+                            margins.top: 0
+                            margins.bottom: 0
+
+                            function resetData()
+                            {
+                                splineSeries.removePoints(0, splineSeries.count)
+                                root.sampleCounter = 0
+                                xAxis.min = 0
+                                xAxis.max = 60
+                            }
+
+                            function appendPoint(x)
+                            {
+                                root.sampleCounter = root.sampleCounter+1
+                                if (splineSeries.count >= 50)
+                                {
+                                    splineSeries.remove(0)
+                                    var scrollValue = chart.plotArea.width/60
+                                    chart.scrollRight(scrollValue)
+                                }
+                                splineSeries.append(root.sampleCounter, x)
+                            }
+
+
+                            antialiasing: true
+                            legend.visible: false
+
+                            SplineSeries {
+                                id: splineSeries
+
+                                axisX: ValueAxis{
+                                    id: xAxis
+                                    min: 0
+                                    max: 60
+                                    labelsFont.pixelSize: 12
+                                }
+
+                                axisY: ValueAxis {
+                                    id: yAxis
+                                    min: -15
+                                    max: 15
+                                    labelsFont.pixelSize: 12
+                                }
+                            }
+                        }
+
+                        /*ColumnLayout {
                             anchors.fill: parent
                             RowLayout {
                                 Layout.fillHeight: true
@@ -339,7 +407,7 @@ Window {
                             }
                             RowLayout {
                                 Layout.fillHeight: true
-                                Layout.fillWidth: true
+                                Layout.fillWidth: trueQML slideswitch
                                 Text {
                                     text: "Y : "
                                     Layout.alignment: Qt.AlignVCenter
@@ -375,7 +443,7 @@ Window {
                                     orangeUppertolerance: 2
                                 }
                             }
-                        }
+                        }*/
                     }
                     Item {
                         Layout.fillHeight: true
@@ -399,6 +467,15 @@ Window {
                                     Text {
                                         text: "Latitude : " + root.latitude
                                     }
+                                    Item {
+                                        Layout.fillHeight: true
+                                        Layout.fillWidth: true
+                                    }
+
+                                    Switch {
+                                        id: speedSwitch
+                                        text: "Car"
+                                    }
                                 }
                             }
 
@@ -418,7 +495,12 @@ Window {
                                         Layout.preferredWidth: height
                                         Layout.alignment: Qt.AlignHCenter
                                         minValue: 0
-                                        maxValue: 220
+                                        maxValue: {
+                                            if (speedSwitch.checked)
+                                                return 220
+                                            else
+                                                return 50
+                                        }
                                         value: root.speedValue
                                         GaugeScale {
                                             anchors.horizontalCenter: parent.horizontalCenter
@@ -426,13 +508,25 @@ Window {
                                             width: parent.width*0.9
                                             height: parent.height*0.9
                                             minValue: 0
-                                            maxValue: 220
+                                            maxValue: {
+                                                if (speedSwitch.checked)
+                                                    return 220
+                                                else
+                                                    return 50
+                                            }
+
                                             minAngle: -135
                                             maxAngle: 135
                                             scaleColor: "white"
                                             scaleFontSize: speedScale.font.pixelSize*1.5
                                             scalePrecision: 0
-                                            tickList: [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220]
+                                            tickList: {
+                                                if (speedSwitch.checked)
+                                                    return [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220]
+                                                else
+                                                    return [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+                                            }
+
                                         }
 
                                         Text {
