@@ -30,9 +30,9 @@ private:
     int sampleRatio();
     void setsampleRatio(int paRatio);
 
-    double meX;
-    double meY;
-    double meZ;
+    QList<double> meX;
+    QList<double> meY;
+    QList<double> meZ;
     double meLongitude;
     double meLatitude;
 

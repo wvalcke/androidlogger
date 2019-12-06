@@ -1,3 +1,4 @@
+#include <iterator>
 #include <QtCore/QDateTime>
 #include <QtCore/QFileInfo>
 #include <QtCore/QDebug>
@@ -15,12 +16,8 @@
 
 DataPool::DataPool()
 {
-    meX = 0.0;
-    meY = 0.0;
-    meZ = 0.0;
-    meLatitude = 0.0;
     meLongitude = 0.0;
-
+    meLatitude = 0.0;
     meSampleLength = 0;
 
     meKeepAwakeHelper = nullptr;
@@ -51,9 +48,12 @@ void DataPool::registerMetaData()
 
 void DataPool::setSensorValues(double paX, double paY, double paZ)
 {
-    meX = paX;
-    meY = paY;
-    meZ = paZ;
+    if (meLogTimer.isActive())
+    {
+        meX.append(paX);
+        meY.append(paY);
+        meZ.append(paZ);
+    }
 }
 
 void DataPool::setPosition(double longitude, double latitude)
@@ -64,6 +64,10 @@ void DataPool::setPosition(double longitude, double latitude)
 
 void DataPool::startLogging()
 {
+    if (meLogTimer.isActive())
+    {
+        return;
+    }
     QString path = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
     qDebug() << "Writable path : " << path;
 
@@ -90,6 +94,9 @@ void DataPool::stopLogging()
     meLogTimer.stop();
     meLogFile.close();
     meSampleLength = 0;
+    meX.clear();
+    meY.clear();
+    meZ.clear();
     setlogFile("No logging active");
     if (meKeepAwakeHelper)
     {
@@ -101,10 +108,26 @@ void DataPool::stopLogging()
 void DataPool::logTimerFired()
 {
     //qDebug() << "Log timer fired";
-    meLogFile.write(QString("%1, %2, %3, %4, %5\n").arg(meX, 0, 'f', 2).arg(meY, 0, 'f', 2).arg(meZ, 0, 'f', 2)
-                    .arg(meLongitude, 0, 'f', 6).arg(meLatitude, 0, 'f', 6)
-                    .toLatin1());
-    setsampleLength(meSampleLength+1);
+    // calculate new value based on list
+    if (meX.length())
+    {
+        //qDebug() << "Numbers of items in list " << meX.length();
+        QList<double> loAmplitude;
+        for (int c=0; c < meX.count(); c++)
+        {
+            loAmplitude.append(sqrt(pow(meX[c], 2)+pow(meY[c], 2)+pow(meZ[c], 2)));
+        }
+        // search maximum
+        int idx = std::distance(loAmplitude.begin(), std::max_element(loAmplitude.begin(), loAmplitude.end()));
+
+        meLogFile.write(QString("%1, %2, %3, %4, %5\n").arg(meX[idx], 0, 'f', 2).arg(meY[idx], 0, 'f', 2).arg(meZ[idx], 0, 'f', 2)
+                        .arg(meLongitude, 0, 'f', 6).arg(meLatitude, 0, 'f', 6)
+                        .toLatin1());
+        setsampleLength(meSampleLength+1);
+        meX.clear();
+        meY.clear();
+        meZ.clear();
+    }
 }
 
 QString DataPool::logFile()
